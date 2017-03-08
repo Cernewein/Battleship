@@ -11,10 +11,21 @@
 			  integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
 			  crossorigin="anonymous"></script>
 			  <style type="text/css">
-			  	h1 {
+				@font-face {
+				    font-family: VB;
+				    src: url(vermin_vibes.woff);
+
+				}
+			  	h1{
+			  		font-family: VB;
+			  		font-size: 50px;
 			  		text-align: center;
 			  		background-color: #222222;
 			  		color: red;
+			  	}
+			  	h2{
+			  		font-family: VB;
+			  		text-align: center;
 			  	}
 			  	td {
 					height:10px;
@@ -37,6 +48,7 @@
     <body>
 
         <h1>Battleships</h1>
+        <h2 id="pseudo"></h2>
         <!--<p><input type="button" value="Embêter le serveur" id="poke" /></p>-->
 
 		 <table  align="left">
@@ -84,25 +96,67 @@
                 socket.emit('message', 'Salut serveur, ça va ?');
 
             })*/
+            var pseudo = prompt('Quel est votre pseudo ?');
+
+            // Et on l'envoie avec le signal "new_user"
+
+            socket.emit('new_user', pseudo);
+
+            var nbrBateaux = 0;
+
             $('td').click(function (event) {
             	//$(event.target).css("background-color", "red");
             	var col = $(this).parent().children().index($(this));
 				var row = $(this).parent().parent().children().index($(this).parent());
 				var id = event.target.parentNode.parentNode.id;
+				var placement = true;
+				if (col>=1 && row>=1 && id == 'joueur') {
+					if (nbrBateaux<6) {
+						socket.emit('placement_bateaux', {"pseudo":pseudo,"id":id,"col":col,"row":row});
+						nbrBateaux++;
+					}else{placement = false;}
+				}
+				else if(id == 'adversaire' && !placement){
+					socket.emit('tir',{"pseudo":pseudo,"id":id,"col":col,"row":row});
+				}
+				
+            	//$('#joueur').css("background-color", "red");
+            });
+            /*$('td').click(function (event) {
+            	//$(event.target).css("background-color", "red");
+            	var col = $(this).parent().children().index($(this));
+				var row = $(this).parent().parent().children().index($(this).parent());
+				var id = event.target.parentNode.parentNode.id;
 				if (col>=1 && row>=1) {
-					console.log('On est bien dans le if');
 					socket.emit('cell', {"id":id,"col":col,"row":row});
 				}
             	
 
             	//$('#joueur').css("background-color", "red");
+            });*/
+            socket.on('welcome',function(message){
+            	$('#pseudo').append(message);
             });
-            socket.on('retour',function(retour){
-            	var id = retour.id;
-            	var col = retour.col+1;
-            	var row = retour.row+1; 
-            	$("#"+id+" tr:nth-child("+row+") td:nth-child("+col+")").css("background-color", 'red');
-            	console.log(row + ' ' + col);
+
+            socket.on('retour_placement',function(bateaux){
+            	for (var i=0;i<bateaux.length;i++){
+            		if (bateaux[i].pseudo == pseudo) {
+	            		var id = bateaux[i].id;
+		            	var col = bateaux[i].col+1;
+		            	var row = bateaux[i].row+1; 
+		            	$("#"+id+" tr:nth-child("+row+") td:nth-child("+col+")").css("background-color", 'red');
+            		}
+            	}
+            });
+
+            socket.on('retour_tir',function(tirs){
+            	for (var i=0;i<tirs.length;i++){
+					var id = tirs[i].id;
+	            	var col = tirs[i].col+1;
+	            	var row = tirs[i].row+1;
+	            	var touche = tirs[i].touche;
+	            	$("#"+id+" tr:nth-child("+row+") td:nth-child("+col+")").css("background-color", 'red');
+            	}
             });
         </script>
 
