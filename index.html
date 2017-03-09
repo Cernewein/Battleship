@@ -84,6 +84,24 @@
 		  <tr><td>10</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
 		 </tbody>
 		 </table>
+
+		<div align="center">
+			<h3>Vos bateaux:</h3>
+				<select id="sel_bateau">
+				  <option value="5">Porte-avion</option>
+				  <option value="4">Croiseur</option>
+				  <option value="3">Contre torpilleur</option>
+				  <option value="3">Sous-marin</option>
+				  <option value="2">Torpilleur</option>
+				</select>
+		</div>
+		<div align="center">
+			<h3>L'orientation du bateau</h3>
+				<select id="sel_orientation">
+				  <option value="H">Horizontale</option>
+				  <option value="V">Verticale</option>
+				</select>
+		</div>
         <script src="/socket.io/socket.io.js"></script>
         <script>
 
@@ -101,7 +119,7 @@
             // Et on l'envoie avec le signal "new_user"
 
             socket.emit('new_user', pseudo);
-
+            alert('Veuillez placer vos bateaux');
             var nbrBateaux = 0;
 
             $('td').click(function (event) {
@@ -110,11 +128,16 @@
 				var row = $(this).parent().parent().children().index($(this).parent());
 				var id = event.target.parentNode.parentNode.id;
 				var placement = true;
+				var val_bateau = $('#sel_bateau').val();
 				if (col>=1 && row>=1 && id == 'joueur') {
-					if (nbrBateaux<6) {
-						socket.emit('placement_bateaux', {"pseudo":pseudo,"id":id,"col":col,"row":row});
+					if (nbrBateaux<10) {
+						socket.emit('placement_bateaux', {"pseudo":pseudo,"id":id,"bateau":val_bateau,"col":col,"row":row});
 						nbrBateaux++;
-					}else{placement = false;}
+						$("#sel_bateau option[value='"+val_bateau+"']").remove();
+					}else{
+						placement = false;
+						alert("La phase de placement est finie, place à la phase d'attaque");
+					}
 				}
 				else if(id == 'adversaire' && !placement){
 					socket.emit('tir',{"pseudo":pseudo,"id":id,"col":col,"row":row});
@@ -155,7 +178,7 @@
 	            	var col = tirs[i].col+1;
 	            	var row = tirs[i].row+1;
 	            	var touche = tirs[i].touche;
-	            	$("#"+id+" tr:nth-child("+row+") td:nth-child("+col+")").css("background-color", 'red');
+	            	$("#"+id+" tr:nth-child("+row+") td:nth-child("+col+")").css("background-color", 'blue');
             	}
             });
         </script>

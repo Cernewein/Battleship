@@ -85,18 +85,15 @@ io.sockets.on('connection', function (socket) {
     socket.on('new_user',function(user){
     	socket.user = user;
     	socket.emit('welcome', 'Bienvenue à toi ' + user);
-    	console.log('New user ! ' + user);
+    	console.log('New user : ' + user);
     });
 
     socket.on('placement_bateaux', function (event) {
         //console.log(event);
-        console.log(bateaux);
         bateaux.push(event);
         socket.emit('retour_placement',bateaux);
     }); 
     socket.on('tir', function(event){
     })
 });
-
-
 server.listen(8080);
