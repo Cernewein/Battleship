@@ -51,7 +51,7 @@ var server = http.createServer(function(req, res) {
     }
     if(req.url.indexOf('.woff') != -1){ //req.url has the pathname, check if it conatins '.css'
 
-      fs.readFile(__dirname + '/fonts/vermin_vibes.woff', function (err, data) {
+      fs.readFile(__dirname + '/fonts/BAD_GRUNGE.woff', function (err, data) {
         if (err) console.log(err);
         res.writeHead(200, {'Content-Type': 'text/font'});
         res.write(data);
