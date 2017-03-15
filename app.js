@@ -7,7 +7,7 @@ var fs = require('fs');
 
 var server = http.createServer(function(req, res) {
 
-    if(req.url.indexOf('.html') != -1){ //req.url has the pathname, check if it conatins '.html'
+    if(req.url.indexOf('.html') != -1){ //req.url has the pathname, check if it contains '.html'
 
       fs.readFile('index.html', function (err, data) {
         if (err) console.log(err);
@@ -70,8 +70,7 @@ var server = http.createServer(function(req, res) {
 
 });
 
-var bateaux =[];
-var tirs = [];
+
 // Chargement de socket.io
 
 var io = require('socket.io').listen(server);
@@ -80,7 +79,10 @@ var io = require('socket.io').listen(server);
 // Quand un client se connecte, on le note dans la console
 
 io.sockets.on('connection', function (socket) {
+	var bateaux =[];
+	var tirs = [];
     console.log('Un client est connecté !');
+	
     //socket.emit('message', 'Vous êtes bien connecté !');
     socket.on('new_user',function(user){
     	socket.user = user;
