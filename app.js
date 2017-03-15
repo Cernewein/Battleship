@@ -70,8 +70,7 @@ var server = http.createServer(function(req, res) {
 
 });
 
-var bateaux =[];
-var tirs = [];
+
 // Chargement de socket.io
 
 var io = require('socket.io').listen(server);
@@ -80,6 +79,8 @@ var io = require('socket.io').listen(server);
 // Quand un client se connecte, on le note dans la console
 
 io.sockets.on('connection', function (socket) {
+	var bateaux =[];
+	var tirs = [];
     console.log('Un client est connecté !');
     //socket.emit('message', 'Vous êtes bien connecté !');
     socket.on('new_user',function(user){
@@ -94,6 +95,8 @@ io.sockets.on('connection', function (socket) {
         socket.emit('retour_placement',bateaux);
     }); 
     socket.on('tir', function(event){
+    	tirs.push(event);
+    	socket.emit('retour_tir',tirs);
     })
 });
 server.listen(8080);
