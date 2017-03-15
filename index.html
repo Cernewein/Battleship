@@ -112,7 +112,9 @@
 			listeBat.set("CT", [3,0]);
 			listeBat.set("SM", [3,0]);
 			listeBat.set("T", [2,0]);
-			//console.log(listeBat);
+
+			console.log(listeBat);
+
 
             $('td').click(function (event) {
             	//$(event.target).css("background-color", "red");
@@ -121,10 +123,12 @@
 				var id = event.target.parentNode.parentNode.id;
 				var val_bateau = $('#sel_bateau').val();
 
+
 				console.log(id);
 				console.log(placement);
 				
 				if (col>=1 && row>=2 && id == 'joueur') {
+
 					if (nbrBateaux<5) {//Gestion des bateaux à modifier ! Plutôt stocker toute la grille
 					//si c'est le premier bout du bateau
 						if (listeBat.get(val_bateau)[1]==0){
@@ -140,9 +144,11 @@
 							if (col==aux_dico[2]){
 								if (Math.abs(row-aux_dico[3])==aux_dico[0]-1){
 									socket.emit('placement_bateaux', {"pseudo":pseudo,"id":id,"bateau":val_bateau,"col1":aux_dico[2],"row1":aux_dico[3],"col2":col,"row2":row});
+
 									//console.log(aux_dico);
 									//console.log(row);
 									//console.log(col);
+
 									$("#sel_bateau option[value='"+val_bateau+"']").remove();
 									nbrBateaux = nbrBateaux + 1;
 								}else {
@@ -152,9 +158,11 @@
 							else if (row==aux_dico[3]){
 								if (Math.abs(col-aux_dico[2])==aux_dico[0]-1){
 									socket.emit('placement_bateaux', {"pseudo":pseudo,"id":id,"bateau":val_bateau,"col1":aux_dico[2],"row1":aux_dico[3],"col2":col,"row2":row});
+
 									//console.log(aux_dico);
 									//console.log(row);
 									//console.log(col);
+
 									$("#sel_bateau option[value='"+val_bateau+"']").remove();
 									nbrBateaux = nbrBateaux + 1;
 								}else {
@@ -196,6 +204,7 @@
             	$('#pseudo').append(message);
             });
 
+
             socket.on('retour_placement',function(grille){
             	var index = grille[0].indexOf(pseudo);
             	for (var i=1;i<11;i++){
@@ -203,6 +212,7 @@
             			if(grille[i][j][index] == 1){
             				$("#joueur tr:nth-child("+(i+2)+") td:nth-child("+(j+1)+")").css("background-color", 'red');
             			}
+
             		}
             	}
             });

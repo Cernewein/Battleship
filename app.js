@@ -86,6 +86,7 @@ for (var i = 0; i <10; i++) { // On créé la grille en entier et dans la 1ère 
 // Quand un client se connecte, on le note dans la console
 
 io.sockets.on('connection', function (socket) {
+
 	var tirs = [];
     console.log('Un client est connecté !');
 	
