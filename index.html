@@ -100,7 +100,7 @@
             var socket = io.connect('http://localhost:8080');
 			
             var pseudo = prompt('Quel est votre pseudo ?');
-
+            var placement = true; // Pour savoir si on est en phase de placement ou pas
             // Et on l'envoie avec le signal "new_user"
 
             socket.emit('new_user', pseudo);
@@ -112,17 +112,23 @@
 			listeBat.set("CT", [3,0]);
 			listeBat.set("SM", [3,0]);
 			listeBat.set("T", [2,0]);
+
 			console.log(listeBat);
+
 
             $('td').click(function (event) {
             	//$(event.target).css("background-color", "red");
             	var col = $(this).parent().children().index($(this));
 				var row = $(this).parent().parent().children().index($(this).parent());
 				var id = event.target.parentNode.parentNode.id;
-				var placement = true;
 				var val_bateau = $('#sel_bateau').val();
+
+
+				console.log(id);
+				console.log(placement);
 				
-				if (col>=1 && row>=1 && id == 'joueur') {
+				if (col>=1 && row>=2 && id == 'joueur') {
+
 					if (nbrBateaux<5) {//Gestion des bateaux à modifier ! Plutôt stocker toute la grille
 					//si c'est le premier bout du bateau
 						if (listeBat.get(val_bateau)[1]==0){
@@ -138,9 +144,11 @@
 							if (col==aux_dico[2]){
 								if (Math.abs(row-aux_dico[3])==aux_dico[0]-1){
 									socket.emit('placement_bateaux', {"pseudo":pseudo,"id":id,"bateau":val_bateau,"col1":aux_dico[2],"row1":aux_dico[3],"col2":col,"row2":row});
-									console.log(aux_dico);
-									console.log(row);
-									console.log(col);
+
+									//console.log(aux_dico);
+									//console.log(row);
+									//console.log(col);
+
 									$("#sel_bateau option[value='"+val_bateau+"']").remove();
 									nbrBateaux = nbrBateaux + 1;
 								}else {
@@ -150,9 +158,11 @@
 							else if (row==aux_dico[3]){
 								if (Math.abs(col-aux_dico[2])==aux_dico[0]-1){
 									socket.emit('placement_bateaux', {"pseudo":pseudo,"id":id,"bateau":val_bateau,"col1":aux_dico[2],"row1":aux_dico[3],"col2":col,"row2":row});
-									console.log(aux_dico);
-									console.log(row);
-									console.log(col);
+
+									//console.log(aux_dico);
+									//console.log(row);
+									//console.log(col);
+
 									$("#sel_bateau option[value='"+val_bateau+"']").remove();
 									nbrBateaux = nbrBateaux + 1;
 								}else {
@@ -167,11 +177,13 @@
 					}
 					}else{
 						placement = false;
+						console.log(placement);
 						alert("La phase de placement est finie, place à la phase d'attaque");
 					}
 				}
 				else if(id == 'adversaire' && !placement){
-					socket.emit('tir',{"pseudo":pseudo,"id":id,"col":col,"row":row});
+					console.log('Hello');
+					socket.emit('tir',{"pseudo":pseudo,"col":col,"row":row});
 				}
 				
             	//$('#joueur').css("background-color", "red");
@@ -192,45 +204,32 @@
             	$('#pseudo').append(message);
             });
 
-            socket.on('retour_placement',function(bateaux){
-            	for (var i=0;i<bateaux.length;i++){
-            		if (bateaux[i].pseudo == pseudo) {
-	            		var id = bateaux[i].id;
-		            	var col1 = bateaux[i].col1;
-		            	var row1 = bateaux[i].row1; 
-						var col2 = bateaux[i].col2;
-		            	var row2 = bateaux[i].row2; 
-						if (col1>col2){
-							aux=col1;
-							col2 = col1;
-							col1 = aux;
-						}
-						if (row1>row2){
-							aux=row1;
-							row2 = row1;
-							row1 = aux;
-						}
-						if(row1==row2){
-							for (j=col1;j<=col2;j++){
-								$("#"+id+" tr:nth-child("+(row1+1)+") td:nth-child("+(j+1)+")").css("background-color", 'red');
-							}
-						}
-						if(col1==col2){
-							for (j=row1;j<=row2;j++){
-								$("#"+id+" tr:nth-child("+(j+1)+") td:nth-child("+(col1+1)+")").css("background-color", 'red');
-							}
-						}
+
+            socket.on('retour_placement',function(grille){
+            	var index = grille[0].indexOf(pseudo);
+            	for (var i=1;i<11;i++){
+            		for(var j =0;j<10;j++){
+            			if(grille[i][j][index] == 1){
+            				$("#joueur tr:nth-child("+(i+2)+") td:nth-child("+(j+1)+")").css("background-color", 'red');
+            			}
+
             		}
             	}
             });
 
             socket.on('retour_tir',function(tirs){
+            	if(tirs[tirs.length-1].touche){
+            		alert('Bien joué, vous avez touché un bateau !');
+            	}
             	for (var i=0;i<tirs.length;i++){
-					var id = tirs[i].id;
 	            	var col = tirs[i].col+1;
 	            	var row = tirs[i].row+1;
 	            	var touche = tirs[i].touche;
-	            	$("#"+id+" tr:nth-child("+row+") td:nth-child("+col+")").css("background-color", 'blue');
+	            	if(touche){
+	            		$("#adversaire tr:nth-child("+row+") td:nth-child("+col+")").css("background-color", 'green');
+	            	}else{
+	            		$("#adversaire tr:nth-child("+row+") td:nth-child("+col+")").css("background-color", 'blue');
+	            	}
             	}
             });
         </script>
