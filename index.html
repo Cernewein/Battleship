@@ -98,9 +98,13 @@
         <script src="/socket.io/socket.io.js"></script>
         <script>
             var socket = io.connect('http://localhost:8080');
-			
+			console.log('connecté');
             var pseudo = prompt('Quel est votre pseudo ?');
             var placement = true; // Pour savoir si on est en phase de placement ou pas
+            var mon_tour = false;
+            socket.on('premier',function(premier){
+            	mon_tour = premier;
+            });
             // Et on l'envoie avec le signal "new_user"
 
             socket.emit('new_user', pseudo);
@@ -173,15 +177,27 @@
 						}
 					}	
 				}
+
 				else {
 					if (placement){
 						alert('L autre joueur n a pas fini !')
-					}else {
-						if(id == 'adversaire'){
+					}else if{id == 'adversaire' && mon_tour ){
 							console.log('Hello');
-							socket.emit('tir',{"pseudo":pseudo,"col":col,"row":row});
-						}
+					socket.emit('tir',{"pseudo":pseudo,"col":col,"row":row});
+					mon_tour = false;
+				}
+				else if(id == 'adversaire' && !mon_tour){
+					alert("Ce n'est pas à votre tour de jouer !");
 					}
+          
+
+				else if(col>=1 && row>=2 && id == 'adversaire' && !placement && mon_tour){
+					console.log('Hello');
+					socket.emit('tir',{"pseudo":pseudo,"col":col,"row":row});
+					mon_tour = false;
+				}
+				else if(!mon_tour){
+					alert("Ce n'est pas à votre tour de jouer !");
 				}
 				
             	//$('#joueur').css("background-color", "red");
@@ -260,6 +276,25 @@
 	            	}
             	}
             });
+
+            socket.on('retour_tir_adversaire',function(tirs){
+            	for (var i=0;i<tirs.length;i++){
+	            	var col = tirs[i].col+1;
+	            	var row = tirs[i].row+1;
+	            	var touche = tirs[i].touche;
+	            	if(touche){
+	            		$("#joueur tr:nth-child("+row+") td:nth-child("+col+")").css("background-color", 'green');
+	            	}
+            	}
+            	mon_tour = true;
+            })
+
+            socket.on('gagne',function(message){
+            	alert(message);
+            });
+            socket.on('perdu',function(message){
+            	alert(message);
+            })
         </script>
 
     </body>
