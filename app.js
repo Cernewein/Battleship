@@ -95,6 +95,7 @@ io.sockets.on('connection', function (socket) {
     	socket.user = user;
     	grille[0].push(user);// On ajoute le joueur dans la liste de joueurs
     	socket.emit('welcome', 'Bienvenue à toi ' + user);
+    	socket.emit('premier',grille[0][0] == user);
     	console.log('New user : ' + user);
     });
 
@@ -158,15 +159,30 @@ io.sockets.on('connection', function (socket) {
     socket.on('tir', function(event){
     	var index = grille[0].indexOf(event.pseudo);
     	var touche = false
+    	var somme_touche = 0;
     	if(index == 0){index = 1;}// On échange index pour pouvoir parcourir la grille de l'autre joueur
     	else{index = 0;}
     	var row = event.row;
     	var col = event.col;
     	if(grille[row-1][col][index] == 1){
     		touche = true;
+    		grille[row-1][col][index] = -1;
     	}
     	tirs.push({"col":col,"row":row,"touche":touche});
     	socket.emit('retour_tir',tirs);
+    	socket.broadcast.emit('retour_tir_adversaire',tirs,true);
+		for (var i=1;i<11;i++){
+			for(var j =0;j<10;j++){
+				if(grille[i][j][index]==-1){
+					somme_touche +=1
+				}
+			}
+		}
+		console.log(somme_touche);
+		if(somme_touche == 17){
+			socket.emit('gagne',"Bravo, vous venez de gagner ! ");
+			socket.broadcast.emit('perdu',"Désolé, vous venez de perdre..");
+		}
     })
 });
 server.listen(8080);
