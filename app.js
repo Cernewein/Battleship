@@ -108,6 +108,9 @@ io.sockets.on('connection', function (socket) {
 		var row1 = bateau.row1;
 		var col2 = bateau.col2;
 		var row2 = bateau.row2;
+		var colbis=bateau.col1;
+		var rowbis=bateau.row1;
+		var val_bateau=bateau.bateau;
 		if (col1>col2){
 			aux=col1;
 			col2 = col1;
@@ -119,17 +122,38 @@ io.sockets.on('connection', function (socket) {
 			row1 = aux;
 		}
 		if(row1==row2){
+			var bool=true;
 			for (j=col1;j<=col2;j++){
-				grille[row1-1][j][index] = 1;
+				if (grille[row1-1][j][index] == 1){
+					bool=false;
+				}
+			}
+			if (bool){
+				for (j=col1;j<=col2;j++){
+					grille[row1-1][j][index] = 1;
+				}
 			}
 		}
 		if(col1==col2){
+			var bool=true;
 			for (j=row1;j<=row2;j++){
-				grille[j-1][col1][index] = 1;
+				if(grille[j-1][col1][index] == 1){
+					bool=false;
+				}
+			}
+			if (bool){
+				for (j=row1;j<=row2;j++){
+					grille[j-1][col1][index] = 1;
+				}
 			}
 		}
-		console.log(grille);
-        socket.emit('retour_placement',grille);
+		if (bool){
+			console.log(grille);
+			socket.emit('retour_placement',{"bool":bool,"grille":grille,"bateau":val_bateau});
+		} else {
+			grille[rowbis-1][colbis][index]=0;
+			socket.emit('retour_placement',{"bool":bool,"grille":grille,"bateau":val_bateau});
+		}
     }); 
     socket.on('tir', function(event){
     	var index = grille[0].indexOf(event.pseudo);

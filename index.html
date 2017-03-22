@@ -148,9 +148,6 @@
 									//console.log(aux_dico);
 									//console.log(row);
 									//console.log(col);
-
-									$("#sel_bateau option[value='"+val_bateau+"']").remove();
-									nbrBateaux = nbrBateaux + 1;
 								}else {
 									alert("Le bout de votre bateau est mal placé !");
 								}
@@ -162,9 +159,6 @@
 									//console.log(aux_dico);
 									//console.log(row);
 									//console.log(col);
-
-									$("#sel_bateau option[value='"+val_bateau+"']").remove();
-									nbrBateaux = nbrBateaux + 1;
 								}else {
 									alert("Le bout de votre bateau est mal placé !");
 								}
@@ -205,16 +199,38 @@
             });
 
 
-            socket.on('retour_placement',function(grille){
-            	var index = grille[0].indexOf(pseudo);
-            	for (var i=1;i<11;i++){
-            		for(var j =0;j<10;j++){
-            			if(grille[i][j][index] == 1){
-            				$("#joueur tr:nth-child("+(i+2)+") td:nth-child("+(j+1)+")").css("background-color", 'red');
-            			}
-
-            		}
-            	}
+            socket.on('retour_placement',function(placement){
+				var bool=placement.bool;
+				var val_bateau=placement.bateau;
+				if (bool){
+					$("#sel_bateau option[value='"+val_bateau+"']").remove();
+					nbrBateaux = nbrBateaux + 1;
+					var grille=placement.grille;
+					var index = grille[0].indexOf(pseudo);
+					for (var i=1;i<11;i++){
+						for(var j =0;j<10;j++){
+							if(grille[i][j][index] == 1){
+								$("#joueur tr:nth-child("+(i+2)+") td:nth-child("+(j+1)+")").css("background-color", 'red');
+							}
+							else {
+								$("#joueur tr:nth-child("+(i+2)+") td:nth-child("+(j+1)+")").css("background-color", 'white');
+							}
+						}
+					}
+				} else {
+						if (val_bateau=="PA"){
+							listeBat.set("PA", [5,0]);}
+						else if (val_bateau=="C"){
+							listeBat.set("C", [4,0]);}
+						else if (val_bateau=="CT"){
+							listeBat.set("CT", [3,0]);}
+						else if (val_bateau=="SM"){
+							listeBat.set("SM", [3,0]);}
+						else{
+							listeBat.set("T", [2,0]);}
+					alert("Vos bateaux sont les uns sur les autres");
+					
+				}
             });
 
             socket.on('retour_tir',function(tirs){
