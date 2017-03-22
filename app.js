@@ -86,6 +86,7 @@ for (var i = 0; i <10; i++) { // On créé la grille en entier et dans la 1ère 
 // Quand un client se connecte, on le note dans la console
 
 io.sockets.on('connection', function (socket) {
+
 	var tirs = [];
     console.log('Un client est connecté !');
 	
@@ -94,6 +95,7 @@ io.sockets.on('connection', function (socket) {
     	socket.user = user;
     	grille[0].push(user);// On ajoute le joueur dans la liste de joueurs
     	socket.emit('welcome', 'Bienvenue à toi ' + user);
+    	socket.emit('premier',grille[0][0] == user);
     	console.log('New user : ' + user);
     });
 
@@ -107,6 +109,9 @@ io.sockets.on('connection', function (socket) {
 		var row1 = bateau.row1;
 		var col2 = bateau.col2;
 		var row2 = bateau.row2;
+		var colbis=bateau.col1;
+		var rowbis=bateau.row1;
+		var val_bateau=bateau.bateau;
 		if (col1>col2){
 			aux=col1;
 			col2 = col1;
@@ -118,30 +123,66 @@ io.sockets.on('connection', function (socket) {
 			row1 = aux;
 		}
 		if(row1==row2){
+			var bool=true;
 			for (j=col1;j<=col2;j++){
-				grille[row1-1][j][index] = 1;
+				if (grille[row1-1][j][index] == 1){
+					bool=false;
+				}
+			}
+			if (bool){
+				for (j=col1;j<=col2;j++){
+					grille[row1-1][j][index] = 1;
+				}
 			}
 		}
 		if(col1==col2){
+			var bool=true;
 			for (j=row1;j<=row2;j++){
-				grille[j-1][col1][index] = 1;
+				if(grille[j-1][col1][index] == 1){
+					bool=false;
+				}
+			}
+			if (bool){
+				for (j=row1;j<=row2;j++){
+					grille[j-1][col1][index] = 1;
+				}
 			}
 		}
-		console.log(grille);
-        socket.emit('retour_placement',grille);
+		if (bool){
+			console.log(grille);
+			socket.emit('retour_placement',{"bool":bool,"grille":grille,"bateau":val_bateau});
+		} else {
+			grille[rowbis-1][colbis][index]=0;
+			socket.emit('retour_placement',{"bool":bool,"grille":grille,"bateau":val_bateau});
+		}
     }); 
     socket.on('tir', function(event){
     	var index = grille[0].indexOf(event.pseudo);
     	var touche = false
+    	var somme_touche = 0;
     	if(index == 0){index = 1;}// On échange index pour pouvoir parcourir la grille de l'autre joueur
     	else{index = 0;}
     	var row = event.row;
     	var col = event.col;
     	if(grille[row-1][col][index] == 1){
     		touche = true;
+    		grille[row-1][col][index] = -1;
     	}
     	tirs.push({"col":col,"row":row,"touche":touche});
     	socket.emit('retour_tir',tirs);
+    	socket.broadcast.emit('retour_tir_adversaire',tirs,true);
+		for (var i=1;i<11;i++){
+			for(var j =0;j<10;j++){
+				if(grille[i][j][index]==-1){
+					somme_touche +=1
+				}
+			}
+		}
+		console.log(somme_touche);
+		if(somme_touche == 17){
+			socket.emit('gagne',"Bravo, vous venez de gagner ! ");
+			socket.broadcast.emit('perdu',"Désolé, vous venez de perdre..");
+		}
     })
 });
 server.listen(8080);

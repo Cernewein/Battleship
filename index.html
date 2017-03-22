@@ -98,9 +98,13 @@
         <script src="/socket.io/socket.io.js"></script>
         <script>
             var socket = io.connect('http://localhost:8080');
-			
+			console.log('connecté');
             var pseudo = prompt('Quel est votre pseudo ?');
             var placement = true; // Pour savoir si on est en phase de placement ou pas
+            var mon_tour = false;
+            socket.on('premier',function(premier){
+            	mon_tour = premier;
+            });
             // Et on l'envoie avec le signal "new_user"
 
             socket.emit('new_user', pseudo);
@@ -112,7 +116,9 @@
 			listeBat.set("CT", [3,0]);
 			listeBat.set("SM", [3,0]);
 			listeBat.set("T", [2,0]);
-			//console.log(listeBat);
+
+			console.log(listeBat);
+
 
             $('td').click(function (event) {
             	//$(event.target).css("background-color", "red");
@@ -121,10 +127,12 @@
 				var id = event.target.parentNode.parentNode.id;
 				var val_bateau = $('#sel_bateau').val();
 
+
 				console.log(id);
 				console.log(placement);
 				
 				if (col>=1 && row>=2 && id == 'joueur') {
+
 					if (nbrBateaux<5) {//Gestion des bateaux à modifier ! Plutôt stocker toute la grille
 					//si c'est le premier bout du bateau
 						if (listeBat.get(val_bateau)[1]==0){
@@ -140,11 +148,10 @@
 							if (col==aux_dico[2]){
 								if (Math.abs(row-aux_dico[3])==aux_dico[0]-1){
 									socket.emit('placement_bateaux', {"pseudo":pseudo,"id":id,"bateau":val_bateau,"col1":aux_dico[2],"row1":aux_dico[3],"col2":col,"row2":row});
+
 									//console.log(aux_dico);
 									//console.log(row);
 									//console.log(col);
-									$("#sel_bateau option[value='"+val_bateau+"']").remove();
-									nbrBateaux = nbrBateaux + 1;
 								}else {
 									alert("Le bout de votre bateau est mal placé !");
 								}
@@ -152,11 +159,10 @@
 							else if (row==aux_dico[3]){
 								if (Math.abs(col-aux_dico[2])==aux_dico[0]-1){
 									socket.emit('placement_bateaux', {"pseudo":pseudo,"id":id,"bateau":val_bateau,"col1":aux_dico[2],"row1":aux_dico[3],"col2":col,"row2":row});
+
 									//console.log(aux_dico);
 									//console.log(row);
 									//console.log(col);
-									$("#sel_bateau option[value='"+val_bateau+"']").remove();
-									nbrBateaux = nbrBateaux + 1;
 								}else {
 									alert("Le bout de votre bateau est mal placé !");
 								}
@@ -173,9 +179,13 @@
 						alert("La phase de placement est finie, place à la phase d'attaque");
 					}
 				}
-				else if(id == 'adversaire' && !placement){
+				else if(col>=1 && row>=2 && id == 'adversaire' && !placement && mon_tour){
 					console.log('Hello');
 					socket.emit('tir',{"pseudo":pseudo,"col":col,"row":row});
+					mon_tour = false;
+				}
+				else if(!mon_tour){
+					alert("Ce n'est pas à votre tour de jouer !");
 				}
 				
             	//$('#joueur').css("background-color", "red");
@@ -196,15 +206,39 @@
             	$('#pseudo').append(message);
             });
 
-            socket.on('retour_placement',function(grille){
-            	var index = grille[0].indexOf(pseudo);
-            	for (var i=1;i<11;i++){
-            		for(var j =0;j<10;j++){
-            			if(grille[i][j][index] == 1){
-            				$("#joueur tr:nth-child("+(i+2)+") td:nth-child("+(j+1)+")").css("background-color", 'red');
-            			}
-            		}
-            	}
+
+            socket.on('retour_placement',function(placement){
+				var bool=placement.bool;
+				var val_bateau=placement.bateau;
+				if (bool){
+					$("#sel_bateau option[value='"+val_bateau+"']").remove();
+					nbrBateaux = nbrBateaux + 1;
+					var grille=placement.grille;
+					var index = grille[0].indexOf(pseudo);
+					for (var i=1;i<11;i++){
+						for(var j =0;j<10;j++){
+							if(grille[i][j][index] == 1){
+								$("#joueur tr:nth-child("+(i+2)+") td:nth-child("+(j+1)+")").css("background-color", 'red');
+							}
+							else {
+								$("#joueur tr:nth-child("+(i+2)+") td:nth-child("+(j+1)+")").css("background-color", 'white');
+							}
+						}
+					}
+				} else {
+						if (val_bateau=="PA"){
+							listeBat.set("PA", [5,0]);}
+						else if (val_bateau=="C"){
+							listeBat.set("C", [4,0]);}
+						else if (val_bateau=="CT"){
+							listeBat.set("CT", [3,0]);}
+						else if (val_bateau=="SM"){
+							listeBat.set("SM", [3,0]);}
+						else{
+							listeBat.set("T", [2,0]);}
+					alert("Vos bateaux sont les uns sur les autres");
+					
+				}
             });
 
             socket.on('retour_tir',function(tirs){
@@ -222,6 +256,25 @@
 	            	}
             	}
             });
+
+            socket.on('retour_tir_adversaire',function(tirs){
+            	for (var i=0;i<tirs.length;i++){
+	            	var col = tirs[i].col+1;
+	            	var row = tirs[i].row+1;
+	            	var touche = tirs[i].touche;
+	            	if(touche){
+	            		$("#joueur tr:nth-child("+row+") td:nth-child("+col+")").css("background-color", 'green');
+	            	}
+            	}
+            	mon_tour = true;
+            })
+
+            socket.on('gagne',function(message){
+            	alert(message);
+            });
+            socket.on('perdu',function(message){
+            	alert(message);
+            })
         </script>
 
     </body>
