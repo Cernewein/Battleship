@@ -116,6 +116,8 @@
 			listeBat.set("CT", [3,0]);
 			listeBat.set("SM", [3,0]);
 			listeBat.set("T", [2,0]);
+			
+			var placement=true;
 
 			console.log(listeBat);
 
@@ -131,9 +133,9 @@
 				console.log(id);
 				console.log(placement);
 				
-				if (col>=1 && row>=2 && id == 'joueur') {
+				if (col>=1 && row>=2 && nbrBateaux<5) {
 
-					if (nbrBateaux<5) {//Gestion des bateaux à modifier ! Plutôt stocker toute la grille
+					if (id == 'joueur') {//Gestion des bateaux à modifier ! Plutôt stocker toute la grille
 					//si c'est le premier bout du bateau
 						if (listeBat.get(val_bateau)[1]==0){
 							var aux_dico = listeBat.get(val_bateau);
@@ -172,13 +174,23 @@
 						//si on a déjà placé le bateau
 						}else {
 						alert('bateau déjà placé');
-					}
-					}else{
-						placement = false;
-						console.log(placement);
-						alert("La phase de placement est finie, place à la phase d'attaque");
-					}
+						}
+					}	
 				}
+
+				else {
+					if (placement){
+						alert('L autre joueur n a pas fini !')
+					}else if{id == 'adversaire' && mon_tour ){
+							console.log('Hello');
+					socket.emit('tir',{"pseudo":pseudo,"col":col,"row":row});
+					mon_tour = false;
+				}
+				else if(id == 'adversaire' && !mon_tour){
+					alert("Ce n'est pas à votre tour de jouer !");
+					}
+          
+
 				else if(col>=1 && row>=2 && id == 'adversaire' && !placement && mon_tour){
 					console.log('Hello');
 					socket.emit('tir',{"pseudo":pseudo,"col":col,"row":row});
@@ -225,6 +237,10 @@
 							}
 						}
 					}
+					if(nbrBateaux>=5){
+						alert('vous avez fini de placer vos bateaux !');
+						socket.emit("fin_placement",pseudo);	
+					}
 				} else {
 						if (val_bateau=="PA"){
 							listeBat.set("PA", [5,0]);}
@@ -241,6 +257,10 @@
 				}
             });
 
+			socket.on('retour_fin_placement',function(bool){
+				placement = bool;
+			});
+			
             socket.on('retour_tir',function(tirs){
             	if(tirs[tirs.length-1].touche){
             		alert('Bien joué, vous avez touché un bateau !');

@@ -85,6 +85,8 @@ for (var i = 0; i <10; i++) { // On créé la grille en entier et dans la 1ère 
     }
 // Quand un client se connecte, on le note dans la console
 
+var pseudos=[];
+
 io.sockets.on('connection', function (socket) {
 
 	var tirs = [];
@@ -97,6 +99,23 @@ io.sockets.on('connection', function (socket) {
     	socket.emit('welcome', 'Bienvenue à toi ' + user);
     	socket.emit('premier',grille[0][0] == user);
     	console.log('New user : ' + user);
+	});
+		
+	socket.on('disconnect',function(){
+		index = grille[0].indexOf(socket.user);
+		grille = [[]];// Pour la grille il vaut mieux la créer en tant que variable globale !
+		for (var i = 0; i <10; i++) { // On créé la grille en entier et dans la 1ère ligne on stocke les joueurs en fonction de leur ordre de connection
+			var ligne = [];
+			for (var j = 0; j <10; j++) {
+				ligne.push([0,0]);// On crée la grille en parallèle pour les deux joueurs
+			}
+			grille.push(ligne);
+		}
+		socket.broadcast.emit('au_revoir',''+socket.user+' est parti');
+		grille[0].splice(index);
+		console.log(grille[0]);
+	});	
+		
     });
 
     socket.on('placement_bateaux', function (bateau) {
@@ -149,13 +168,34 @@ io.sockets.on('connection', function (socket) {
 			}
 		}
 		if (bool){
-			console.log(grille);
 			socket.emit('retour_placement',{"bool":bool,"grille":grille,"bateau":val_bateau});
 		} else {
 			grille[rowbis-1][colbis][index]=0;
 			socket.emit('retour_placement',{"bool":bool,"grille":grille,"bateau":val_bateau});
 		}
     }); 
+	
+	socket.on('fin_placement',function(pseudo){
+		console.log(pseudos.length);
+		if (pseudos.indexOf(pseudo)==-1){
+			pseudos.push(pseudo);
+			if (pseudos.length == 1){
+				socket.emit('retour_fin_placement',true);
+				socket.broadcast.emit('retour_fin_placement',true);
+			}else {
+				socket.emit('retour_fin_placement',false);
+				socket.broadcast.emit('retour_fin_placement',false);
+			}
+		}else {
+			if (pseudos.length == 1){
+				socket.emit('retour_fin_placement',true);
+				socket.broadcast.emit('retour_fin_placement',true);
+			}else {
+				socket.emit('retour_fin_placement',false);
+				socket.broadcast.emit('retour_fin_placement',false);
+		}}
+	});
+	
     socket.on('tir', function(event){
     	var index = grille[0].indexOf(event.pseudo);
     	var touche = false
@@ -184,5 +224,6 @@ io.sockets.on('connection', function (socket) {
 			socket.broadcast.emit('perdu',"Désolé, vous venez de perdre..");
 		}
     })
+	
 });
 server.listen(8080);
