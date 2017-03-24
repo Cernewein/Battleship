@@ -102,6 +102,7 @@
             var pseudo = prompt('Quel est votre pseudo ?');
             var placement = true; // Pour savoir si on est en phase de placement ou pas
             var mon_tour = false;
+			
             socket.on('premier',function(premier){
             	mon_tour = premier;
             });
@@ -116,11 +117,20 @@
 			listeBat.set("CT", [3,0]);
 			listeBat.set("SM", [3,0]);
 			listeBat.set("T", [2,0]);
+			var room;
 			
 			var placement=true;
 
 			console.log(listeBat);
+			
+			socket.on('message',function(message){
+				alert(message);
+			});
 
+			socket.on('chambre',function(chambre){
+				room=chambre;
+				alert(room);
+			});
 
             $('td').click(function (event) {
             	//$(event.target).css("background-color", "red");
@@ -181,23 +191,16 @@
 				else {
 					if (placement){
 						alert('L autre joueur n a pas fini !')
-					}else if{id == 'adversaire' && mon_tour ){
+					}else{
+						if(id == 'adversaire' && mon_tour ){
 							console.log('Hello');
-					socket.emit('tir',{"pseudo":pseudo,"col":col,"row":row});
-					mon_tour = false;
-				}
-				else if(id == 'adversaire' && !mon_tour){
-					alert("Ce n'est pas à votre tour de jouer !");
+							socket.emit('tir',{"pseudo":pseudo,"col":col,"row":row,'room':room});
+							mon_tour = false;
+						}
+						else if(id == 'adversaire' && !mon_tour){
+							alert("Ce n'est pas à votre tour de jouer !");
+							}
 					}
-          
-
-				else if(col>=1 && row>=2 && id == 'adversaire' && !placement && mon_tour){
-					console.log('Hello');
-					socket.emit('tir',{"pseudo":pseudo,"col":col,"row":row});
-					mon_tour = false;
-				}
-				else if(!mon_tour){
-					alert("Ce n'est pas à votre tour de jouer !");
 				}
 				
             	//$('#joueur').css("background-color", "red");
@@ -230,16 +233,18 @@
 					for (var i=1;i<11;i++){
 						for(var j =0;j<10;j++){
 							if(grille[i][j][index] == 1){
+								console.log('hello');
 								$("#joueur tr:nth-child("+(i+2)+") td:nth-child("+(j+1)+")").css("background-color", 'red');
 							}
 							else {
+								console.log('hola');
 								$("#joueur tr:nth-child("+(i+2)+") td:nth-child("+(j+1)+")").css("background-color", 'white');
 							}
 						}
 					}
 					if(nbrBateaux>=5){
 						alert('vous avez fini de placer vos bateaux !');
-						socket.emit("fin_placement",pseudo);	
+						socket.emit("fin_placement",{"pseudo":pseudo,'room':room});	
 					}
 				} else {
 						if (val_bateau=="PA"){
@@ -294,7 +299,7 @@
             });
             socket.on('perdu',function(message){
             	alert(message);
-            })
+            });
         </script>
 
     </body>

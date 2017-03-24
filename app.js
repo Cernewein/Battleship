@@ -85,9 +85,15 @@ for (var i = 0; i <10; i++) { // On créé la grille en entier et dans la 1ère 
     }
 // Quand un client se connecte, on le note dans la console
 
-var pseudos=[];
+	var rooms = new Map;
+	rooms.set('0',0);
+	var nbr_room = 0;
+	var personne_room = new Map;
+	var pseudos=new Map;
+	pseudos.set('0',[]);
 
 io.sockets.on('connection', function (socket) {
+	
 
 	var tirs = [];
     console.log('Un client est connecté !');
@@ -99,7 +105,28 @@ io.sockets.on('connection', function (socket) {
     	socket.emit('welcome', 'Bienvenue à toi ' + user);
     	socket.emit('premier',grille[0][0] == user);
     	console.log('New user : ' + user);
+		for (var room of rooms.keys()){
+			console.log(room);
+			if (rooms.get(room)<2){
+				var aux = rooms.get(room);
+				aux=aux+1;
+				socket.join(room);
+				rooms.set(room,aux);
+				console.log(user+"dans la salle"+room);
+				personne_room.set(user,room);
+				socket.emit('chambre',room);
+			} else {
+				nbr_room = nbr_room + 1;
+				socket.join(nbr_room.toString());
+				rooms.set(nbr_room.toString(),1);
+				console.log(user+"dans la salle"+nbr_room);
+				personne_room.set(user,nbr_room);
+				socket.emit('chambre',nbr_room);
+				pseudos.set(nbr_room.toString(),[]);
+			}
+		}
 	});
+		
 		
 	socket.on('disconnect',function(){
 		index = grille[0].indexOf(socket.user);
@@ -111,12 +138,20 @@ io.sockets.on('connection', function (socket) {
 			}
 			grille.push(ligne);
 		}
-		socket.broadcast.emit('au_revoir',''+socket.user+' est parti');
+		console.log(personne_room);
+		for (var aux of personne_room.keys()){
+			if(aux==socket.user){
+				var auxbis = rooms.get(personne_room.get(aux));
+				auxbis=auxbis-1;
+				rooms.set(aux[1].toString(),auxbis);
+				personne_room.delete(aux);
+				socket.broadcast.to(aux[1].toString()).emit('message',''+socket.user+' est parti');
+			}
+		}
 		grille[0].splice(index);
 		console.log(grille[0]);
 	});	
 		
-    });
 
     socket.on('placement_bateaux', function (bateau) {
         //console.log(event);
@@ -132,12 +167,12 @@ io.sockets.on('connection', function (socket) {
 		var rowbis=bateau.row1;
 		var val_bateau=bateau.bateau;
 		if (col1>col2){
-			aux=col1;
+			var aux=col1;
 			col2 = col1;
 			col1 = aux;
 		}
 		if (row1>row2){
-			aux=row1;
+			var aux=row1;
 			row2 = row1;
 			row1 = aux;
 		}
@@ -168,6 +203,7 @@ io.sockets.on('connection', function (socket) {
 			}
 		}
 		if (bool){
+			console.log(grille);
 			socket.emit('retour_placement',{"bool":bool,"grille":grille,"bateau":val_bateau});
 		} else {
 			grille[rowbis-1][colbis][index]=0;
@@ -175,24 +211,28 @@ io.sockets.on('connection', function (socket) {
 		}
     }); 
 	
-	socket.on('fin_placement',function(pseudo){
-		console.log(pseudos.length);
-		if (pseudos.indexOf(pseudo)==-1){
-			pseudos.push(pseudo);
-			if (pseudos.length == 1){
-				socket.emit('retour_fin_placement',true);
-				socket.broadcast.emit('retour_fin_placement',true);
+	socket.on('fin_placement',function(liste){
+		var pseudo=liste.pseudo;
+		var room=liste.room;
+		var pseudos_bis=pseudos.get(room.toString());
+		console.log(pseudos_bis.length);
+		if (pseudos_bis.indexOf(pseudo)==-1){
+			pseudos_bis.push(pseudo);
+			pseudos.set(room.toString(),pseudos_bis);
+			if (pseudos_bis.length == 1){
+				socket.to(room.toString()).emit('retour_fin_placement',true);
+				socket.broadcast.to(room.toString()).emit('retour_fin_placement',true);
 			}else {
 				socket.emit('retour_fin_placement',false);
-				socket.broadcast.emit('retour_fin_placement',false);
+				socket.broadcast.to(room.toString()).emit('retour_fin_placement',false);
 			}
 		}else {
-			if (pseudos.length == 1){
+			if (pseudos_bis.length == 1){
 				socket.emit('retour_fin_placement',true);
-				socket.broadcast.emit('retour_fin_placement',true);
+				socket.broadcast.to(room.toString()).emit('retour_fin_placement',true);
 			}else {
 				socket.emit('retour_fin_placement',false);
-				socket.broadcast.emit('retour_fin_placement',false);
+				socket.broadcast.to(room.toString()).emit('retour_fin_placement',false);
 		}}
 	});
 	
@@ -200,6 +240,7 @@ io.sockets.on('connection', function (socket) {
     	var index = grille[0].indexOf(event.pseudo);
     	var touche = false
     	var somme_touche = 0;
+		var room=event.room;
     	if(index == 0){index = 1;}// On échange index pour pouvoir parcourir la grille de l'autre joueur
     	else{index = 0;}
     	var row = event.row;
@@ -210,7 +251,7 @@ io.sockets.on('connection', function (socket) {
     	}
     	tirs.push({"col":col,"row":row,"touche":touche});
     	socket.emit('retour_tir',tirs);
-    	socket.broadcast.emit('retour_tir_adversaire',tirs,true);
+    	socket.broadcast.to(room.toString()).emit('retour_tir_adversaire',tirs,true);
 		for (var i=1;i<11;i++){
 			for(var j =0;j<10;j++){
 				if(grille[i][j][index]==-1){
@@ -221,7 +262,7 @@ io.sockets.on('connection', function (socket) {
 		console.log(somme_touche);
 		if(somme_touche == 17){
 			socket.emit('gagne',"Bravo, vous venez de gagner ! ");
-			socket.broadcast.emit('perdu',"Désolé, vous venez de perdre..");
+			socket.broadcast.to(room.toString()).emit('perdu',"Désolé, vous venez de perdre..");
 		}
     })
 	
