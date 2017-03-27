@@ -102,6 +102,7 @@
             var pseudo = prompt('Quel est votre pseudo ?');
             var placement = true; // Pour savoir si on est en phase de placement ou pas
             var mon_tour = false;
+			
             socket.on('premier',function(premier){
             	mon_tour = premier;
             });
@@ -110,18 +111,29 @@
             socket.emit('new_user', pseudo);
             alert('Veuillez placer vos bateaux');
             var nbrBateaux = 0;
-			var listeBat= new Map;
+			var listeBat= new Map; //dictionnaire pour savoir si les points du bateaux sont placés et les caractéristiques
 			listeBat.set("PA", [5,0]);
 			listeBat.set("C", [4,0]);
 			listeBat.set("CT", [3,0]);
 			listeBat.set("SM", [3,0]);
 			listeBat.set("T", [2,0]);
+			var room;
 			
 			var placement=true;
 
 			console.log(listeBat);
+			
+			socket.on('message',function(message){
+				alert(message);
+			});
+			
+			//On garde en mémoire la room de l'utilisateur
+			socket.on('chambre',function(chambre){
+				room=chambre;
+				alert(room);
+			});
 
-
+			//lorsqu'on clique :
             $('td').click(function (event) {
             	//$(event.target).css("background-color", "red");
             	var col = $(this).parent().children().index($(this));
@@ -133,9 +145,10 @@
 				console.log(id);
 				console.log(placement);
 				
+				//si les bateaux ne sont pas encore placés :
 				if (col>=1 && row>=2 && nbrBateaux<5) {
 
-					if (id == 'joueur') {//Gestion des bateaux à modifier ! Plutôt stocker toute la grille
+					if (id == 'joueur') {//si on est sur la grille du joueur
 					//si c'est le premier bout du bateau
 						if (listeBat.get(val_bateau)[1]==0){
 							var aux_dico = listeBat.get(val_bateau);
@@ -147,9 +160,10 @@
 					// si c'est le second bout du bateau
 						else if (listeBat.get(val_bateau)[1]==1){
 							aux_dico = listeBat.get(val_bateau);
+							//on regarde l'alignement des bateaux : horizontal ou vertical
 							if (col==aux_dico[2]){
 								if (Math.abs(row-aux_dico[3])==aux_dico[0]-1){
-									socket.emit('placement_bateaux', {"pseudo":pseudo,"id":id,"bateau":val_bateau,"col1":aux_dico[2],"row1":aux_dico[3],"col2":col,"row2":row});
+									socket.emit('placement_bateaux', {"pseudo":pseudo,"id":id,"bateau":val_bateau,"col1":aux_dico[2],"row1":aux_dico[3],"col2":col,"row2":row,"room":room});
 
 									//console.log(aux_dico);
 									//console.log(row);
@@ -160,7 +174,7 @@
 							}
 							else if (row==aux_dico[3]){
 								if (Math.abs(col-aux_dico[2])==aux_dico[0]-1){
-									socket.emit('placement_bateaux', {"pseudo":pseudo,"id":id,"bateau":val_bateau,"col1":aux_dico[2],"row1":aux_dico[3],"col2":col,"row2":row});
+									socket.emit('placement_bateaux', {"pseudo":pseudo,"id":id,"bateau":val_bateau,"col1":aux_dico[2],"row1":aux_dico[3],"col2":col,"row2":row,"room":room});
 
 									//console.log(aux_dico);
 									//console.log(row);
@@ -177,27 +191,21 @@
 						}
 					}	
 				}
-
+				//si on a fini de placer les bateaux
 				else {
+					//si l'autre joueur n'a pas terminé
 					if (placement){
 						alert('L autre joueur n a pas fini !')
-					}else if{id == 'adversaire' && mon_tour ){
+					}else{ //si l'autre joueur a terminé
+						if(id == 'adversaire' && mon_tour ){ //gestion de tour
 							console.log('Hello');
-					socket.emit('tir',{"pseudo":pseudo,"col":col,"row":row});
-					mon_tour = false;
-				}
-				else if(id == 'adversaire' && !mon_tour){
-					alert("Ce n'est pas à votre tour de jouer !");
+							socket.emit('tir',{"pseudo":pseudo,"col":col,"row":row,'room':room});
+							mon_tour = false;
+						}
+						else if(id == 'adversaire' && !mon_tour){
+							alert("Ce n'est pas à votre tour de jouer !");
+							}
 					}
-          
-
-				else if(col>=1 && row>=2 && id == 'adversaire' && !placement && mon_tour){
-					console.log('Hello');
-					socket.emit('tir',{"pseudo":pseudo,"col":col,"row":row});
-					mon_tour = false;
-				}
-				else if(!mon_tour){
-					alert("Ce n'est pas à votre tour de jouer !");
 				}
 				
             	//$('#joueur').css("background-color", "red");
@@ -218,7 +226,7 @@
             	$('#pseudo').append(message);
             });
 
-
+			//on colorie les cases si le placement du bateau était bon
             socket.on('retour_placement',function(placement){
 				var bool=placement.bool;
 				var val_bateau=placement.bateau;
@@ -239,9 +247,9 @@
 					}
 					if(nbrBateaux>=5){
 						alert('vous avez fini de placer vos bateaux !');
-						socket.emit("fin_placement",pseudo);	
+						socket.emit("fin_placement",{"pseudo":pseudo,'room':room});	
 					}
-				} else {
+				} else {								//sinon on remet à 0 le nombre de points du bateaux mis
 						if (val_bateau=="PA"){
 							listeBat.set("PA", [5,0]);}
 						else if (val_bateau=="C"){
@@ -261,10 +269,13 @@
 				placement = bool;
 			});
 			
+			//gestion de tir
             socket.on('retour_tir',function(tirs){
+				// s'il y a touche : message
             	if(tirs[tirs.length-1].touche){
             		alert('Bien joué, vous avez touché un bateau !');
             	}
+				//on colorie la grille adversaire selon les tirs (touchés ou pas)
             	for (var i=0;i<tirs.length;i++){
 	            	var col = tirs[i].col+1;
 	            	var row = tirs[i].row+1;
@@ -277,7 +288,9 @@
             	}
             });
 
+			//gestion de tir adversaire
             socket.on('retour_tir_adversaire',function(tirs){
+			//si un bateau est touché, sa case est coloriée en vert
             	for (var i=0;i<tirs.length;i++){
 	            	var col = tirs[i].col+1;
 	            	var row = tirs[i].row+1;
@@ -288,13 +301,14 @@
             	}
             	mon_tour = true;
             })
-
+			
+			//message pour la victoire ou la défaite
             socket.on('gagne',function(message){
             	alert(message);
             });
             socket.on('perdu',function(message){
             	alert(message);
-            })
+            });
         </script>
 
     </body>
