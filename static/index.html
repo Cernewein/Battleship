@@ -7,109 +7,100 @@
         <meta charset="utf-8" />
 
         <title>Battleships</title>
-        <script src="https://code.jquery.com/jquery-3.1.1.js"
-			  integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
-			  crossorigin="anonymous"></script>
-	    <style type="text/css">
-			@font-face {
-				font-family: BG;
-				src: url(BAD_GRUNGE.woff);
-
-			}
-			h1{
-				font-family: BG;
-				font-size: 60px;
-				text-align: center;
-				/*background-color: #222222;
-				color: red;*/
-			}
-			h2{
-				text-align: center;
-			}
-			h3{
-				text-align: center;
-				color:red;
-			}
-			td {
-				height:20px;
-				width: 20px;
-				text-align: center;
-			}
-			table {
-				width: 45%;
-			}
-			table, td, th {
-				border: 1px solid black;
-				border-collapse: collapse;
-			}
-			header{
-				background-image: url(battleships.jpg);
-			}
-	    </style>
-
+        <script src="jquery-3.1.1.js"></script>
+        <link rel ="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	    <link rel ="stylesheet" type="text/css" href="css/custom.css">
     </head>
 
  
 
     <body>
 
-        <header><h1>BATTLESHIPS</h1></header>
+        <div navbar navbar-default navbar-fixed-top text-center><h1>BATTLESHIPS</h1></div>
         <h2 id="pseudo"></h2>
         <h3 id="infos"></h3>
         <!--<p><input type="button" value="Embêter le serveur" id="poke" /></p>-->
-
-		 <table  align="left">
-		 <tbody id="adversaire">
-		 <tr><td colspan=10>Votre adversaire</td></tr>
-		  <tr><td></td><td>A</td><td>B</td><td>C</td><td>D</td><td>E</td><td>F</td><td>G</td><td>H</td><td>I</td></tr>
-		  <tr id="test1"><td>1</td ><td id="test"> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		  <tr><td>2</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		  <tr><td>3</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		  <tr><td>4</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		  <tr><td>5</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		  <tr><td>6</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		  <tr><td>7</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		  <tr><td>8</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		  <tr><td>9</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		  <tr><td>10</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		 </tbody>
-		 </table>
-
-		 <table  align="right">
-		 <tbody id="joueur" >
-		 <tr><td colspan=10>Votre jeu</td></tr>
-		  <tr><td></td><td>A</td><td>B</td><td>C</td><td>D</td><td>E</td><td>F</td><td>G</td><td>H</td><td>I</td></tr>
-		  <tr><td>1</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		  <tr><td>2</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		  <tr><td>3</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		  <tr><td>4</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		  <tr><td>5</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		  <tr><td>6</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		  <tr><td>7</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		  <tr><td>8</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		  <tr><td>9</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		  <tr><td>10</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
-		 </tbody>
-		 </table>
-
-		<div align="center">
-			<h4>Vos bateaux:</h4>
-				<select id="sel_bateau">
-				  <option value="PA">Porte-avion (5)</option>
-				  <option value="C">Croiseur (4)</option>
-				  <option value="CT">Contre torpilleur (3)</option>
-				  <option value="SM">Sous-marin (3)</option>
-				  <option value="T">Torpilleur (2)</option>
-				</select>
+        <div class="container container-fluid">
+        <div class="row justify-content-between text-center">
+        	<div class="col-lg-6">
+			 <table>
+			 <tbody id="adversaire">
+			 <tr><td colspan=10>Votre adversaire</td></tr>
+			  <tr><td></td><td>A</td><td>B</td><td>C</td><td>D</td><td>E</td><td>F</td><td>G</td><td>H</td><td>I</td></tr>
+			  <tr id="test1"><td>1</td ><td id="test"> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			  <tr><td>2</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			  <tr><td>3</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			  <tr><td>4</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			  <tr><td>5</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			  <tr><td>6</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			  <tr><td>7</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			  <tr><td>8</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			  <tr><td>9</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			  <tr><td>10</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			 </tbody>
+			 </table>
+		 </div>
+		 <div class="col-lg-6">
+			 <table >
+			 <tbody id="joueur" >
+			 <tr><td colspan=10>Votre jeu</td></tr>
+			  <tr><td></td><td>A</td><td>B</td><td>C</td><td>D</td><td>E</td><td>F</td><td>G</td><td>H</td><td>I</td></tr>
+			  <tr><td>1</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			  <tr><td>2</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			  <tr><td>3</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			  <tr><td>4</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			  <tr><td>5</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			  <tr><td>6</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			  <tr><td>7</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			  <tr><td>8</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			  <tr><td>9</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			  <tr><td>10</td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td></tr>
+			 </tbody>
+			 </table>
+		 </div>
 		</div>
-
+		</div>
+		<div class="container container-fluid">
+		<div class="row">
+			<div class="col-lg-12 text-center">
+				<h4>Vos bateaux:</h4>
+					<select id="sel_bateau">
+					  <option value="PA">Porte-avion (5)</option>
+					  <option value="C">Croiseur (4)</option>
+					  <option value="CT">Contre torpilleur (3)</option>
+					  <option value="SM">Sous-marin (3)</option>
+					  <option value="T">Torpilleur (2)</option>
+					</select>
+			</div>
+		</div>
+		</div>
+		<div class="container container-fluid">
+		<div class="row">
+			<div class="explications col-lg-12">
+				<b><p>Pour jouer à Battleship:</p>
+				<ul>
+					<li>Il faut d'abord placer tous ses bateaux, pour faire ceci il faut cliquer sur une case pour placer le premier bout du bateau, puis cliquer sur une autre case pour placer le deuxième bout. Il faut que ces cases soient alignés, que le bateau qu'on essaie de placer ait un taille valide et que les bateaux ne se chevauchent pas.</li>
+					<li>Vous pouvez sélectionner le bateau que vous voulez placer à l'aide de la liste déroulante.</li>
+					<li>Une fois que tous vos bateaux sont placés la phase de tir démarre.</li>
+					<li>Chaque joueur tir à son tour, pour tirer il suffit de cliquer sur la case de la grille adverse souhaitée.</li>
+					<li>Si un bout de bateau est touché, alors la case se colore en vert, sinon elle se colore en bleu.</li>
+					<li>Une fois que tous les bateaux d'un des joueurs ont été coulés, le jeu est terminé.</li>
+				</ul>
+				</b>
+			</div>
+		</div>
+		</div>
         <script src="/socket.io/socket.io.js"></script>
-        <script>
-            var socket = io.connect('http://localhost:8080');
+		<script>
+		var host = $(location).attr('host');
+		var socket = io.connect(host);
+            //var socket = io.connect('192.168.43.223:8080');
 			console.log('connecté');
             var pseudo = prompt('Quel est votre pseudo ?');
             var placement = true; // Pour savoir si on est en phase de placement ou pas
             var mon_tour = false;
+			var valeurs_bateaux=["PA","C","CT","SM","T"];
+			
             socket.on('premier',function(premier){
             	mon_tour = premier;
             });
@@ -118,18 +109,70 @@
             socket.emit('new_user', pseudo);
             alert('Veuillez placer vos bateaux');
             var nbrBateaux = 0;
-			var listeBat= new Map;
+			var listeBat= new Map; //dictionnaire pour savoir si les points du bateaux sont placés et les caractéristiques
 			listeBat.set("PA", [5,0]);
 			listeBat.set("C", [4,0]);
 			listeBat.set("CT", [3,0]);
 			listeBat.set("SM", [3,0]);
 			listeBat.set("T", [2,0]);
+			var room;
 			
 			var placement=true;
 
 			console.log(listeBat);
+			
+			socket.on('message',function(message){
+				alert(message);
+			});
+			
+			//On garde en mémoire la room de l'utilisateur
+			socket.on('chambre',function(chambre){
+				room=chambre;
+				alert(room);
+			});
+			
+			socket.on('init',function(){
+				alert('Veuillez placer vos bateaux');
+				nbrBateaux = 0;
+				listeBat= new Map; //dictionnaire pour savoir si les points du bateaux sont placés et les caractéristiques
+				listeBat.set("PA", [5,0]);
+				listeBat.set("C", [4,0]);
+				listeBat.set("CT", [3,0]);
+				listeBat.set("SM", [3,0]);
+				listeBat.set("T", [2,0]);
+				placement=true;
+				for (var i=1;i<11;i++){
+					for(var j =0;j<10;j++){
+						$("#joueur tr:nth-child("+(i+2)+") td:nth-child("+(j+1)+")").css("background-color", 'transparent');
+						$("#adversaire tr:nth-child("+(i+2)+") td:nth-child("+(j+1)+")").css("background-color", 'transparent');
+					}
+				}
+				for (value of listeBat.keys()){
+					if (!(value in valeurs_bateaux)){
+						switch(value){
+						case 'PA' :
+							$('#sel_bateau').append('<option value='+value +' selected="selected">Porte-Avion (5)</option>');
+							break;
+						case 'C':
+							$('#sel_bateau').append('<option value='+value +' selected="selected">Croiseur (4)</option>');
+							break;
+						case 'CT':
+							$('#sel_bateau').append('<option value='+value +' selected="selected">Contre-Torpilleur (3)</option>');
+							break;
+						case 'SM' :
+							$('#sel_bateau').append('<option value='+value +' selected="selected">Sous-marin (3)</option>');
+							break;
+						case 'T':
+							$('#sel_bateau').append('<option value='+value +' selected="selected">Torpilleur (2)</option>');
+							break;
+						default :
+							console.log("je ne connais pas ce bateau");
+						}
+					}
+				}
+			});
 
-
+			//lorsqu'on clique :
             $('td').click(function (event) {
             	//$(event.target).css("background-color", "red");
             	var col = $(this).parent().children().index($(this));
@@ -141,9 +184,10 @@
 				console.log(id);
 				console.log(placement);
 				
+				//si les bateaux ne sont pas encore placés :
 				if (col>=1 && row>=2 && nbrBateaux<5) {
 
-					if (id == 'joueur') {//Gestion des bateaux à modifier ! Plutôt stocker toute la grille
+					if (id == 'joueur') {//si on est sur la grille du joueur
 					//si c'est le premier bout du bateau
 						if (listeBat.get(val_bateau)[1]==0){
 							var aux_dico = listeBat.get(val_bateau);
@@ -155,58 +199,59 @@
 					// si c'est le second bout du bateau
 						else if (listeBat.get(val_bateau)[1]==1){
 							aux_dico = listeBat.get(val_bateau);
+							//on regarde l'alignement des bateaux : horizontal ou vertical
 							if (col==aux_dico[2]){
 								if (Math.abs(row-aux_dico[3])==aux_dico[0]-1){
-									socket.emit('placement_bateaux', {"pseudo":pseudo,"id":id,"bateau":val_bateau,"col1":aux_dico[2],"row1":aux_dico[3],"col2":col,"row2":row});
+									socket.emit('placement_bateaux', {"pseudo":pseudo,"id":id,"bateau":val_bateau,"col1":aux_dico[2],"row1":aux_dico[3],"col2":col,"row2":row,"room":room});
 
 									//console.log(aux_dico);
 									//console.log(row);
 									//console.log(col);
 								}else {
-									$("#infos").text("Le bout de votre bateau est mal placé !")
-									//alert("Le bout de votre bateau est mal placé !");
+									$("#infos").text("Le bout de votre bateau est mal placé !");
 								}
 							}
 							else if (row==aux_dico[3]){
 								if (Math.abs(col-aux_dico[2])==aux_dico[0]-1){
-									socket.emit('placement_bateaux', {"pseudo":pseudo,"id":id,"bateau":val_bateau,"col1":aux_dico[2],"row1":aux_dico[3],"col2":col,"row2":row});
+									socket.emit('placement_bateaux', {"pseudo":pseudo,"id":id,"bateau":val_bateau,"col1":aux_dico[2],"row1":aux_dico[3],"col2":col,"row2":row,"room":room});
 
 									//console.log(aux_dico);
 									//console.log(row);
 									//console.log(col);
 								}else {
-									$("#infos").text("Le bout de votre bateau est mal placé !")
-									//alert("Le bout de votre bateau est mal placé !");
+									$("#infos").text("Le bout de votre bateau est mal placé !");
 								}
 							}else {
-								$("#infos").text("Le bateau est de travers !")
-								//alert('Le bateau est de travers !');
+								$("#infos").text("Le bateau est de travers !");
 							}
 						//si on a déjà placé le bateau
 						}else {
-						$("#infos").text("bateau déjà placé")
-						//alert('bateau déjà placé');
+							$("#infos").text("bateau déjà placé");
 						}
 					}	
 				}
-
-				else {
+				//si on a fini de placer les bateaux
+				else if(col>=1 && row>=2){
+					//si l'autre joueur n'a pas terminé
 					if (placement){
-						$("#infos").text("L'autre joueur n'a pas fini !")
-						//alert('L autre joueur n a pas fini !')
-					}else{
-						if(id == 'adversaire' && mon_tour){
-							socket.emit('tir',{"pseudo":pseudo,"col":col,"row":row});
+						$("#infos").text("L'autre joueur n'a pas fini !");
+					}else{ //si l'autre joueur a terminé
+						if(id == 'adversaire' && mon_tour ){ //gestion de tour
+							console.log('Hello');
+							socket.emit('tir',{"pseudo":pseudo,"col":col,"row":row,'room':room});
 							mon_tour = false;
+							$("#infos").text("C'est au tour du joueur adverse de tirer");
 						}
 						else if(id == 'adversaire' && !mon_tour){
-							$("#infos").text("Ce n'est pas à votre tour de jouer !")
-							//alert("Ce n'est pas à votre tour de jouer !");
-						}
+							$("#infos").text("Ce n'est pas à votre tour de jouer !");
+							}
 					}
+				}
+				else{
+					$("#infos").text("Vous n'avez pas cliqué sur une case valide");
+				}
 				
             	//$('#joueur').css("background-color", "red");
-            	};
             });
             /*$('td').click(function (event) {
             	//$(event.target).css("background-color", "red");
@@ -224,12 +269,13 @@
             	$('#pseudo').append(message);
             });
 
-
+			//on colorie les cases si le placement du bateau était bon
             socket.on('retour_placement',function(placement){
 				var bool=placement.bool;
 				var val_bateau=placement.bateau;
 				if (bool){
 					$("#sel_bateau option[value='"+val_bateau+"']").remove();
+					valeurs_bateaux.splice(val_bateau);
 					nbrBateaux = nbrBateaux + 1;
 					var grille=placement.grille;
 					var index = grille[0].indexOf(pseudo);
@@ -239,16 +285,21 @@
 								$("#joueur tr:nth-child("+(i+2)+") td:nth-child("+(j+1)+")").css("background-color", 'red');
 							}
 							else {
-								$("#joueur tr:nth-child("+(i+2)+") td:nth-child("+(j+1)+")").css("background-color", 'white');
+								$("#joueur tr:nth-child("+(i+2)+") td:nth-child("+(j+1)+")").css("background-color", 'transparent');
 							}
 						}
 					}
 					if(nbrBateaux>=5){
-						$("#infos").text("Vous avez fini de placer vos bateaux !")
-						//alert('vous avez fini de placer vos bateaux !');
-						socket.emit("fin_placement",pseudo);	
+						alert('vous avez fini de placer vos bateaux !');
+						socket.emit("fin_placement",{"pseudo":pseudo,'room':room});
+						if(mon_tour){
+							$("#infos").text("C'est à votre tour de tirer");
+						}
+						else{
+							$("#infos").text("C'est au tour de l'adversaire de tirer");
+						}
 					}
-				} else {
+				} else {								//sinon on remet à 0 le nombre de points du bateaux mis
 						if (val_bateau=="PA"){
 							listeBat.set("PA", [5,0]);}
 						else if (val_bateau=="C"){
@@ -259,9 +310,7 @@
 							listeBat.set("SM", [3,0]);}
 						else{
 							listeBat.set("T", [2,0]);}
-					$("#infos").text("Vos bateaux sont les uns sur les autres")
-					//alert("Vos bateaux sont les uns sur les autres");
-					
+					$("#infos").text("Vos bateaux sont les uns sur les autres");
 				}
             });
 
@@ -269,11 +318,13 @@
 				placement = bool;
 			});
 			
+			//gestion de tir
             socket.on('retour_tir',function(tirs){
+				// s'il y a touche : message
             	if(tirs[tirs.length-1].touche){
-            		$("#infos").text("Bien joué, vous avez touché un bateau !")
-            		//alert('Bien joué, vous avez touché un bateau !');
+            		$("#infos").text("Bien joué, vous avez touché un bateau !");
             	}
+				//on colorie la grille adversaire selon les tirs (touchés ou pas)
             	for (var i=0;i<tirs.length;i++){
 	            	var col = tirs[i].col+1;
 	            	var row = tirs[i].row+1;
@@ -286,7 +337,9 @@
             	}
             });
 
+			//gestion de tir adversaire
             socket.on('retour_tir_adversaire',function(tirs){
+			//si un bateau est touché, sa case est coloriée en vert
             	for (var i=0;i<tirs.length;i++){
 	            	var col = tirs[i].col+1;
 	            	var row = tirs[i].row+1;
@@ -296,8 +349,10 @@
 	            	}
             	}
             	mon_tour = true;
-            });
-
+            	$("#infos").text("C'est à votre tour de jouer.");
+            })
+			
+			//message pour la victoire ou la défaite
             socket.on('gagne',function(message){
             	alert(message);
             });

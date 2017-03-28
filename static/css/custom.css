@@ -1,0 +1,49 @@
+@font-face {
+	font-family: BG;
+	src: url(../BAD_GRUNGE.woff);
+
+}
+.navbar {
+   background-color: transparent;
+   background: transparent;
+   border-color: transparent;
+   color: #000;
+}
+h1{
+	font-family: BG;
+	font-size: 55px;
+	text-align: center;
+	/*background-color: #222222;
+	color: red;*/
+}
+h2{
+	text-align: center;
+}
+h3{
+	text-align: center;
+	color:red;
+}
+td {
+	height:18px;
+	width: 18px;
+	text-align: center;
+}
+table {
+	width: 100%;
+}
+table, td, th {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+body{
+	background-image: url('../battleships.jpg');
+}
+.text-center{
+	text-align: center;
+}
+p{
+	color:red;
+}
+li{
+	color:red
+}
