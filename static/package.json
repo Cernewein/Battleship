@@ -1,0 +1,11 @@
+{
+ "name"	       : "Battleship",
+ "version"     : "0.1.0",
+ "author"      : "CErnewein_INguyen_Van_Khan",
+ "description" : "A Two-Players Battleship based on node.js and connect",
+ "licence"     : "MIT",
+ "dependencies": {
+   "connect"   : "2.7.4",
+   "socket.io" : "0.9.13"
+  }
+}
