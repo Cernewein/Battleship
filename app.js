@@ -148,10 +148,19 @@ io.sockets.on('connection', function (socket) {
 		
 	//lorsqu'une personne se déconnecte : 	
 	socket.on('disconnect',function(){
+		console.log('Un joueur vient de se déconnecter');
+		var adversaire;
 		for (var aux of personne_room.keys()){
+			console.log(aux);
 			if(aux==socket.user){
 				var room=personne_room.get(aux);
-				var adversaire=grille[room][0][0];
+				if (grille[room][0].length==2){
+					for ( var person in grille[room][0]){
+						if (!(person==socket.user)){
+							adversaire = person;
+						}
+					}
+				}
 				var index = grille[room][0].indexOf(socket.user);
 				console.log(grille[0]);
 				grille_room = [[]];// Pour la grille il vaut mieux la créer en tant que variable globale !
@@ -163,7 +172,9 @@ io.sockets.on('connection', function (socket) {
 					grille_room.push(ligne);
 				}
 				console.log(adversaire);
-				grille_room[0].push(adversaire);
+				if (adversaire!=undefined){
+					grille_room[0].push(adversaire);
+				}
 				//on réinitialise la grille
 				grille[room]=grille_room;
 				var auxbis = rooms.get(personne_room.get(aux));
