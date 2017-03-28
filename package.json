@@ -7,6 +7,5 @@
  "dependencies": {
    "connect"   : "2.7.4",
    "socket.io" : "0.9.13",
-   "urlrouter" : "0.3.0"
   }
 }
