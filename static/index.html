@@ -93,7 +93,7 @@
 			</div>
 		</div>
 		</div>
-        <script src="/socket.io/socket.io.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
 		<script>
 		var host = $(location).attr('host');
 		var socket = io.connect(host); //on connecte le client au serveur
@@ -101,7 +101,7 @@
             var pseudo = prompt('Quel est votre pseudo ?'); //demande du pseudo
             var placement = true; // Pour savoir si on est en phase de placement ou pas
             var mon_tour = false; //pour savoir qui doit jouer dans la phase de tir
-			var valeurs_bateaux=["PA","C","CT","SM","T"]; //tableaux des valeurs des bateaux
+			var valeurs_bateaux=["PA","C","CT","SM","T"];			//tableaux des valeurs des bateaux
 			
 			//on récupère le signal 'premier' du serveur
             socket.on('premier',function(premier){
@@ -130,7 +130,7 @@
 			//On garde en mémoire la room de l'utilisateur
 			socket.on('chambre',function(chambre){
 				room=chambre;
-				//alert(room);
+				alert(room);
 			});
 			
 			
@@ -151,8 +151,15 @@
 						$("#adversaire tr:nth-child("+(i+2)+") td:nth-child("+(j+1)+")").css("background-color", 'transparent');
 					}
 				}
+				//on remet la liste du select à jour
 				for (value of listeBat.keys()){
-					if (!(value in valeurs_bateaux)){
+					function include(arr,obj){
+						for(var i=0; i<arr.length; i++){
+							if (arr[i]==obj) {
+							return false;}
+						}						
+					}
+					if (include(valeurs_bateaux,value)){
 						switch(value){
 						case 'PA' :
 							$('#sel_bateau').append('<option value='+value +' selected="selected">Porte-Avion (5)</option>');
@@ -266,6 +273,7 @@
 				//on enlève les bateaux déjà placés du select
 					$("#sel_bateau option[value='"+val_bateau+"']").remove();
 					valeurs_bateaux.splice(val_bateau);
+					console.log('valeurs_bateaux');
 					nbrBateaux = nbrBateaux + 1;
 					var grille=placement.grille;
 					var index = grille[0].indexOf(pseudo);
