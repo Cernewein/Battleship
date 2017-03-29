@@ -130,9 +130,21 @@
 			//On garde en mémoire la room de l'utilisateur
 			socket.on('chambre',function(chambre){
 				room=chambre;
-				alert(room);
 			});
 			
+			
+			function include(arr,obj){
+				var auxter = true;
+				console.log(arr.length);
+				for(var i=0; i<arr.length; i++){
+					console.log(arr[i]);
+					console.log(obj);
+					if (arr[i]==obj) {
+					
+					auxter=false;}
+				}		
+				return auxter;
+			}
 			
 			//réinitialisation de la grille et des variables html
 			socket.on('init',function(){
@@ -153,13 +165,8 @@
 				}
 				//on remet la liste du select à jour
 				for (value of listeBat.keys()){
-					function include(arr,obj){
-						for(var i=0; i<arr.length; i++){
-							if (arr[i]==obj) {
-							return false;}
-						}						
-					}
-					if (include(valeurs_bateaux,value)){
+					var bool2=include(valeurs_bateaux,value);
+					if (bool2){
 						switch(value){
 						case 'PA' :
 							$('#sel_bateau').append('<option value='+value +' selected="selected">Porte-Avion (5)</option>');
@@ -272,8 +279,13 @@
 				if (bool){
 				//on enlève les bateaux déjà placés du select
 					$("#sel_bateau option[value='"+val_bateau+"']").remove();
-					valeurs_bateaux.splice(val_bateau);
-					console.log('valeurs_bateaux');
+					for (var i=0; i<valeurs_bateaux.length; i++){
+						var aux;
+						if (valeurs_bateaux[i]==val_bateau){
+							aux=i;
+						}
+					}
+					valeurs_bateaux.splice(aux,1);
 					nbrBateaux = nbrBateaux + 1;
 					var grille=placement.grille;
 					var index = grille[0].indexOf(pseudo);
