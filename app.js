@@ -1,10 +1,8 @@
 var http = require('http');
 var jquery = require('jquery');
-var fs = require('fs');
 var connect = require('connect')
   , app = connect()
   , server = http.createServer(app)
-  , urlrouter = require('urlrouter')
   , io = require('socket.io').listen(server) // Chargement de socket.io
   , port = 8080
   , state = { }
